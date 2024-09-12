@@ -10,7 +10,9 @@ def get_data_from_vk(
 ) -> Union[dict, None]:
     logger.info("Trying to get posts from VK.")
     list_post = {}
+    #print(VK_TO_TG)
     for x in VK_TO_TG:
+        #list_post[x[1]]
         match = re.search("^(club|public)(\d+)$", x[0])
         if match:
             source_param = {"owner_id": "-" + match.groups()[1]}
@@ -51,7 +53,11 @@ def get_video_url(vk_token: str, req_version: float, owner_id: str, video_id: st
     )
     data = response.json()
     if "response" in data:
-        return data["response"]["items"][0]["files"].get("external", "")
+        try:
+            return data["response"]["items"][0]["files"].get("external", "")
+        except:
+            logger.error(f"Не удалось получить видео. Возможно оно было удаленно или ограниченно. ID видео: {video_id}")
+            return ""
     elif "error" in data:
         logger.error(f"Error was detected when requesting data from VK: {data['error']['error_msg']}")
     return ""
